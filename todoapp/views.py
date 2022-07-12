@@ -67,7 +67,8 @@ def createtodo(request):
             newtodo.save()
             return redirect('currenttodos')
         except ValueError:
-            return render(request, 'todoapp/createtodo.html', {'form': TodoForm(), 'error': 'Bad data passed in. Try again'})
+            return render(request, 'todoapp/createtodo.html',
+                          {'form': TodoForm(), 'error': 'Bad data passed in. Try again'})
 
 
 def viewtodo(request, todo_pk):
@@ -83,6 +84,7 @@ def viewtodo(request, todo_pk):
         except ValueError:
             return render(request, 'todoapp/viewtodo.html', {'todo': todo, 'form': form, 'error': 'Bad info'})
 
+
 def completetodo(request, todo_pk):
     todo = get_object_or_404(Todo, pk=todo_pk, user=request.user)
     if request.method == 'POST':
@@ -90,8 +92,14 @@ def completetodo(request, todo_pk):
         todo.save()
         return redirect('currenttodos')
 
+
 def deletetodo(request, todo_pk):
     todo = get_object_or_404(Todo, pk=todo_pk, user=request.user)
     if request.method == 'POST':
         todo.delete()
         return redirect('currenttodos')
+
+
+def completedtodos(request):
+    todos = Todo.objects.filter(user=request.user, datecompleted__isnull=False).order_by('-datecompleted')
+    return render(request, 'todoapp/completedtodos.html', {'todos': todos})
